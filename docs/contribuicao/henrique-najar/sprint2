@@ -21,7 +21,3 @@
    * Padronização do layout visual das entregas da Sprint 2 para facilitar a navegação e avaliação dos artefatos.
 
 ---
-
-### Divisão de Responsabilidades na Sprint:
-* **Henrique Najar:** Modelagem do Diagrama Entidade-Relacionamento (ER) e padronização/reestruturação do repositório conforme o template.
-* **Demais integrantes:** Implementação da camada de código, persistência e controladores no back-end.
