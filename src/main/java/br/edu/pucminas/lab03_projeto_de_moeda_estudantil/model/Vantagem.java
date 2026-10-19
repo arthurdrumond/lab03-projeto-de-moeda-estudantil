@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -23,6 +25,10 @@ public class Vantagem {
     private int custoMoedas;
 
     private boolean ativa = true;
+
+    @ManyToOne
+    @JoinColumn(name = "empresa_parceira_id")
+    private EmpresaParceira empresaParceira;
 
     public Vantagem() {
     }
@@ -73,5 +79,13 @@ public class Vantagem {
 
     public void setAtiva(boolean ativa) {
         this.ativa = ativa;
+    }
+
+    public EmpresaParceira getEmpresaParceira() {
+        return empresaParceira;
+    }
+
+    public void setEmpresaParceira(EmpresaParceira empresaParceira) {
+        this.empresaParceira = empresaParceira;
     }
 }
