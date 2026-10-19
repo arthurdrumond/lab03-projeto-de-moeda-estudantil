@@ -7,7 +7,7 @@
 
 ## Atividades Desenvolvidas na Sprint 2
 
-**Contribuição:** Elaboração do Modelo Entidade-Relacionamento (Modelo ER) conceitual/gráfico e adequação da estrutura do repositório no GitHub ao template oficial de apresentação do professor.
+**Contribuição:** Elaboração do Modelo Entidade-Relacionamento (Modelo ER) conceitual/gráfico, reestruturação do repositório no GitHub conforme o template oficial do professor e desenvolvimento da interface web (front-end) integrada com os serviços REST do back-end.
 
 ### Detalhamento das Entregas:
 
@@ -20,4 +20,8 @@
    * Remodelagem da organização de pastas e documentos no GitHub de acordo com as diretrizes e o template disponibilizado pelo professor para a apresentação do projeto.
    * Padronização do layout visual das entregas da Sprint 2 para facilitar a navegação e avaliação dos artefatos.
 
----
+3. **Implementação do Front-end Inicial (`src/main/resources/static/index.html`):**
+   * Criação da interface em HTML5 e CSS3 responsivo para o painel de cadastro e acompanhamento das entidades do sistema.
+   * Integração assíncrona utilizando JavaScript nativo (`fetch API`) consumindo as rotas `/alunos`, `/empresas-parceiras` e `/instituicoes`.
+   * Implementação do formulário de cadastro de alunos com construção do payload JSON aninhado contendo os campos de endereço (`EnderecoDTO`) e seleção dinâmica da instituição de ensino cadastrada.
+   * Implementação do formulário de cadastro de empresas parceiras com suporte a envio de JSON para a API e atualização em tempo real das listagens após novos cadastros.
