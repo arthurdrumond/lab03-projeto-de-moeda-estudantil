@@ -124,9 +124,21 @@ function Dashboard({ user, onLogout, onUserUpdate }) {
       setLoadingStatement(true); api.studentStatement(user.id).then(setStatement).catch((e) => setError(e.message)).finally(() => setLoadingStatement(false))
     }
     if (user.perfil === 'PROFESSOR' || user.perfil === 'EMPRESA') {
-      api.students().then((items) => setPeople(user.perfil === 'EMPRESA'
-        ? items.filter((person) => person.empresaParceira?.id === user.id)
-        : items)).catch((e) => setError(e.message))
+      if (user.perfil === 'EMPRESA') {
+        api.students()
+          .then((items) => setPeople(items.filter((person) => person.empresaParceira?.id === user.id)))
+          .catch((e) => setError(e.message))
+      } else {
+        Promise.all([api.professors(), api.students()])
+          .then(([professors, students]) => {
+            const professor = professors.find((person) => person.id === user.id)
+            const institutionId = professor?.instituicao?.id
+            setPeople(institutionId
+              ? students.filter((person) => person.instituicao?.id === institutionId)
+              : [])
+          })
+          .catch((e) => setError(e.message))
+      }
     }
     if (user.perfil === 'PROFESSOR') {
       setLoadingStatement(true); api.professorStatement(user.id).then(setStatement).catch((e) => setError(e.message)).finally(() => setLoadingStatement(false))

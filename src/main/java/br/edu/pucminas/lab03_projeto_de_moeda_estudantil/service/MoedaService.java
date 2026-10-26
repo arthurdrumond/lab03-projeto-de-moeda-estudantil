@@ -72,6 +72,12 @@ public class MoedaService {
         if (req.professorId() != null) {
             professor = professorRepository.findById(req.professorId())
                     .orElseThrow(() -> new IllegalArgumentException("Professor não encontrado."));
+            if (professor.getInstituicao() == null
+                    || aluno.getInstituicao() == null
+                    || !professor.getInstituicao().getId().equals(aluno.getInstituicao().getId())) {
+                throw new IllegalArgumentException(
+                        "O professor só pode enviar moedas a alunos da sua própria instituição.");
+            }
             if (professor.getSaldo() < req.valor()) {
                 throw new IllegalArgumentException("Saldo insuficiente do professor (" + professor.getSaldo() + " moedas).");
             }
