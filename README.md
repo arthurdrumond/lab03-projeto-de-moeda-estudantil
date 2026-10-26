@@ -195,6 +195,9 @@ O backend utiliza uma arquitetura em camadas:
 As transações não possuem CRUD público. Elas são criadas pelas operações de
 negócio de transferência, crédito semestral e resgate.
 
+### ORM (Hibernate)
+Escolhemos o Hibernate como estratégia de persistência devido à sua confiabilidade e dinamicidade. A maneira com que ele facilita a busca de dados por atributos de entidade se mostra extremamente útil para nossos casos de uso.
+
 ### Frontend
 
 O frontend é uma SPA React construída com Vite. A aplicação possui:
