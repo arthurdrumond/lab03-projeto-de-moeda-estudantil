@@ -14,8 +14,12 @@ public class TransferenciaMoedas extends Transacao {
     private String motivo;
 
     @ManyToOne
-    @JoinColumn(name = "remetente_id", nullable = false)
+    @JoinColumn(name = "professor_id")
     private Professor remetente;
+
+    @ManyToOne
+    @JoinColumn(name = "empresa_parceira_id")
+    private EmpresaParceira empresaParceira;
 
     @ManyToOne
     @JoinColumn(name = "destinatario_id", nullable = false)
@@ -38,6 +42,14 @@ public class TransferenciaMoedas extends Transacao {
 
     public void setRemetente(Professor remetente) {
         this.remetente = remetente;
+    }
+
+    public EmpresaParceira getEmpresaParceira() {
+        return empresaParceira;
+    }
+
+    public void setEmpresaParceira(EmpresaParceira empresaParceira) {
+        this.empresaParceira = empresaParceira;
     }
 
     public Aluno getDestinatario() {

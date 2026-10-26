@@ -15,17 +15,20 @@ public class MoedaService {
 
     private final ProfessorRepository professorRepository;
     private final AlunoRepository alunoRepository;
+    private final EmpresaParceiraRepository empresaParceiraRepository;
     private final VantagemRepository vantagemRepository;
     private final TransacaoRepository transacaoRepository;
     private final EmailService emailService;
 
     public MoedaService(ProfessorRepository professorRepository,
                         AlunoRepository alunoRepository,
+                        EmpresaParceiraRepository empresaParceiraRepository,
                         VantagemRepository vantagemRepository,
                         TransacaoRepository transacaoRepository,
                         EmailService emailService) {
         this.professorRepository = professorRepository;
         this.alunoRepository = alunoRepository;
+        this.empresaParceiraRepository = empresaParceiraRepository;
         this.vantagemRepository = vantagemRepository;
         this.transacaoRepository = transacaoRepository;
         this.emailService = emailService;
@@ -57,16 +60,32 @@ public class MoedaService {
             throw new IllegalArgumentException("O motivo do reconhecimento é obrigatório.");
         }
 
-        Professor professor = professorRepository.findById(req.professorId())
-                .orElseThrow(() -> new IllegalArgumentException("Professor não encontrado."));
         Aluno aluno = alunoRepository.findById(req.alunoId())
                 .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado."));
 
-        if (professor.getSaldo() < req.valor()) {
-            throw new IllegalArgumentException("Saldo insuficiente do professor (" + professor.getSaldo() + " moedas).");
+        if ((req.professorId() == null) == (req.empresaParceiraId() == null)) {
+            throw new IllegalArgumentException("Informe exatamente um remetente: professor ou empresa parceira.");
         }
 
-        professor.setSaldo(professor.getSaldo() - req.valor());
+        Professor professor = null;
+        EmpresaParceira empresa = null;
+        if (req.professorId() != null) {
+            professor = professorRepository.findById(req.professorId())
+                    .orElseThrow(() -> new IllegalArgumentException("Professor não encontrado."));
+            if (professor.getSaldo() < req.valor()) {
+                throw new IllegalArgumentException("Saldo insuficiente do professor (" + professor.getSaldo() + " moedas).");
+            }
+            professor.setSaldo(professor.getSaldo() - req.valor());
+        } else if (req.empresaParceiraId() != null) {
+            empresa = empresaParceiraRepository.findById(req.empresaParceiraId())
+                    .orElseThrow(() -> new IllegalArgumentException("Empresa parceira não encontrada."));
+            if (aluno.getEmpresaParceira() == null
+                    || !empresa.getId().equals(aluno.getEmpresaParceira().getId())) {
+                throw new IllegalArgumentException("A empresa parceira só pode enviar moedas a alunos associados a ela.");
+            }
+        } else {
+            throw new IllegalArgumentException("Informe o professor ou a empresa parceira remetente.");
+        }
         aluno.setSaldo(aluno.getSaldo() + req.valor());
 
         TransferenciaMoedas transf = new TransferenciaMoedas();
@@ -74,9 +93,12 @@ public class MoedaService {
         transf.setValor(req.valor());
         transf.setMotivo(req.motivo());
         transf.setRemetente(professor);
+        transf.setEmpresaParceira(empresa);
         transf.setDestinatario(aluno);
 
-        professorRepository.save(professor);
+        if (professor != null) {
+            professorRepository.save(professor);
+        }
         alunoRepository.save(aluno);
         TransferenciaMoedas salva = transacaoRepository.save(transf);
 
@@ -122,7 +144,10 @@ public class MoedaService {
             String desc = "";
             String cupom = null;
             if (t instanceof TransferenciaMoedas tm) {
-                desc = "Recebido de " + tm.getRemetente().getNome() + " — Motivo: " + tm.getMotivo();
+                String remetente = tm.getRemetente() != null
+                        ? tm.getRemetente().getNome()
+                        : tm.getEmpresaParceira().getNome();
+                desc = "Recebido de " + remetente + " — Motivo: " + tm.getMotivo();
             } else if (t instanceof ResgateVantagem rv) {
                 desc = "Resgate: " + rv.getReferente().getNome();
                 cupom = rv.getCodigoCupom();
@@ -140,7 +165,11 @@ public class MoedaService {
         List<TransacaoResponse> lista = transacaoRepository.findByProfessorId(professorId).stream().map(t -> {
             String desc = "";
             if (t instanceof TransferenciaMoedas tm) {
-                desc = "Enviado para " + tm.getDestinatario().getNome() + " — Motivo: " + tm.getMotivo();
+                String remetente = tm.getRemetente() != null
+                        ? tm.getRemetente().getNome()
+                        : tm.getEmpresaParceira().getNome();
+                desc = "Enviado por " + remetente + " para " + tm.getDestinatario().getNome()
+                        + " — Motivo: " + tm.getMotivo();
             } else if (t instanceof CreditoSemestral cs) {
                 desc = "Crédito Semestral automático (" + cs.getSemestre() + ")";
             }
@@ -148,5 +177,18 @@ public class MoedaService {
         }).toList();
 
         return new ExtratoResponse(professor.getSaldo(), lista);
+    }
+
+    public ExtratoResponse obterExtratoEmpresaParceira(Long empresaId) {
+        EmpresaParceira empresa = empresaParceiraRepository.findById(empresaId)
+                .orElseThrow(() -> new IllegalArgumentException("Empresa parceira não encontrada."));
+        List<TransacaoResponse> lista = transacaoRepository.findByEmpresaParceiraId(empresaId).stream()
+                .map(t -> {
+                    TransferenciaMoedas transferencia = (TransferenciaMoedas) t;
+                    return new TransacaoResponse(t.getId(), t.getClass().getSimpleName(), t.getDataHora(),
+                            t.getValor(), "Enviado para " + transferencia.getDestinatario().getNome()
+                                    + " — Motivo: " + transferencia.getMotivo(), null);
+                }).toList();
+        return new ExtratoResponse(Integer.MAX_VALUE, lista);
     }
 }

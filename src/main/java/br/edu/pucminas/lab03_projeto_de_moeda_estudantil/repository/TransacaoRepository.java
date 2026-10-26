@@ -14,6 +14,9 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
     @Query("SELECT t FROM Transacao t WHERE TYPE(t) = TransferenciaMoedas AND t.destinatario.id = :alunoId OR TYPE(t) = ResgateVantagem AND t.resgatadoPor.id = :alunoId ORDER BY t.dataHora DESC")
     List<Transacao> findByAlunoId(@Param("alunoId") Long alunoId);
 
-    @Query("SELECT t FROM Transacao t WHERE TYPE(t) = TransferenciaMoedas AND t.remetente.id = :professorId OR TYPE(t) = CreditoSemestral AND t.professor.id = :professorId ORDER BY t.dataHora DESC")
+    @Query("SELECT t FROM Transacao t WHERE (TYPE(t) = TransferenciaMoedas AND t.remetente.id = :professorId) OR (TYPE(t) = CreditoSemestral AND t.professor.id = :professorId) ORDER BY t.dataHora DESC")
     List<Transacao> findByProfessorId(@Param("professorId") Long professorId);
+
+    @Query("SELECT t FROM Transacao t WHERE TYPE(t) = TransferenciaMoedas AND t.empresaParceira.id = :empresaId ORDER BY t.dataHora DESC")
+    List<Transacao> findByEmpresaParceiraId(@Param("empresaId") Long empresaId);
 }

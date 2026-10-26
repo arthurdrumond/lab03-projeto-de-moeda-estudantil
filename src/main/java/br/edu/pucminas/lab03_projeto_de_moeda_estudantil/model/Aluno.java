@@ -27,6 +27,10 @@ public class Aluno extends Usuario {
     @JoinColumn(name = "instituicao_id")
     private InstituicaoEnsino instituicao;
 
+    @ManyToOne
+    @JoinColumn(name = "empresa_parceira_id")
+    private EmpresaParceira empresaParceira;
+
     public Aluno() {
     }
 
@@ -76,5 +80,13 @@ public class Aluno extends Usuario {
 
     public void setInstituicao(InstituicaoEnsino instituicao) {
         this.instituicao = instituicao;
+    }
+
+    public EmpresaParceira getEmpresaParceira() {
+        return empresaParceira;
+    }
+
+    public void setEmpresaParceira(EmpresaParceira empresaParceira) {
+        this.empresaParceira = empresaParceira;
     }
 }

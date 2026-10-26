@@ -9,5 +9,6 @@ public record AlunoRequest(
         String rg,
         String curso,
         Long instituicaoId,
+        Long empresaParceiraId,
         EnderecoDTO endereco) {
 }

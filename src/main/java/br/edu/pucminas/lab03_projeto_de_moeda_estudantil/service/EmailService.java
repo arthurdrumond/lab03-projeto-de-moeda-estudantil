@@ -11,10 +11,12 @@ public class EmailService {
         String destinatario = transferencia.getDestinatario().getEmail();
         String assunto = "Você recebeu moedas de reconhecimento!";
         String mensagem = String.format(
-            "Olá %s,\n\nVocê recebeu %d moedas do professor %s.\nMotivo: %s\n\nSeu saldo foi atualizado com sucesso!",
+            "Olá %s,\n\nVocê recebeu %d moedas de %s.\nMotivo: %s\n\nSeu saldo foi atualizado com sucesso!",
             transferencia.getDestinatario().getNome(),
             transferencia.getValor(),
-            transferencia.getRemetente().getNome(),
+            transferencia.getRemetente() != null
+                    ? transferencia.getRemetente().getNome()
+                    : transferencia.getEmpresaParceira().getNome(),
             transferencia.getMotivo()
         );
 

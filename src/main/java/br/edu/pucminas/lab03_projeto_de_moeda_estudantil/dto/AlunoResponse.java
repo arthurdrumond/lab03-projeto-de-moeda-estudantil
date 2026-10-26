@@ -10,5 +10,6 @@ public record AlunoResponse(
         String curso,
         int saldo,
         InstituicaoEnsinoResponse instituicao,
+        EmpresaParceiraResponse empresaParceira,
         EnderecoDTO endereco) {
 }

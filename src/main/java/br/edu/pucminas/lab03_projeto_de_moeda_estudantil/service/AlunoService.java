@@ -5,6 +5,7 @@ import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.dto.AlunoResponse;
 import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.dto.EnderecoDTO;
 import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.model.Aluno;
 import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.model.Endereco;
+import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.model.EmpresaParceira;
 import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.model.InstituicaoEnsino;
 import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.repository.AlunoRepository;
 import java.util.List;
@@ -18,10 +19,15 @@ public class AlunoService {
 
     private final AlunoRepository repository;
     private final InstituicaoEnsinoService instituicaoService;
+    private final EmpresaParceiraService empresaParceiraService;
 
-    public AlunoService(AlunoRepository repository, InstituicaoEnsinoService instituicaoService) {
+    public AlunoService(
+            AlunoRepository repository,
+            InstituicaoEnsinoService instituicaoService,
+            EmpresaParceiraService empresaParceiraService) {
         this.repository = repository;
         this.instituicaoService = instituicaoService;
+        this.empresaParceiraService = empresaParceiraService;
     }
 
     @Transactional
@@ -75,6 +81,10 @@ public class AlunoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Instituicao de ensino e obrigatoria");
         }
         InstituicaoEnsino instituicao = instituicaoService.buscarEntidade(request.instituicaoId());
+        if (request.empresaParceiraId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Empresa parceira e obrigatoria");
+        }
+        EmpresaParceira empresaParceira = empresaParceiraService.buscarEntidade(request.empresaParceiraId());
         aluno.setNome(request.nome());
         aluno.setEmail(request.email());
         aluno.setLogin(request.login());
@@ -83,6 +93,7 @@ public class AlunoService {
         aluno.setRg(request.rg());
         aluno.setCurso(request.curso());
         aluno.setInstituicao(instituicao);
+        aluno.setEmpresaParceira(empresaParceira);
         aluno.setEndereco(toEndereco(request.endereco()));
     }
 
@@ -126,6 +137,7 @@ public class AlunoService {
                 aluno.getCurso(),
                 aluno.getSaldo(),
                 instituicaoService.toResponse(aluno.getInstituicao()),
+                empresaParceiraService.toResponse(aluno.getEmpresaParceira()),
                 toEnderecoDTO(aluno.getEndereco()));
     }
 }

@@ -48,4 +48,9 @@ public class MoedaController {
     public ResponseEntity<ExtratoResponse> obterExtratoProfessor(@PathVariable Long id) {
         return ResponseEntity.ok(moedaService.obterExtratoProfessor(id));
     }
+
+    @GetMapping("/empresas-parceiras/{id}/extrato")
+    public ResponseEntity<ExtratoResponse> obterExtratoEmpresaParceira(@PathVariable Long id) {
+        return ResponseEntity.ok(moedaService.obterExtratoEmpresaParceira(id));
+    }
 }

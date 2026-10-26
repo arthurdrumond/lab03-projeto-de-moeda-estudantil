@@ -22,33 +22,6 @@ public class ProfessorService {
         this.instituicaoRepository = instituicaoRepository;
     }
 
-    public ProfessorResponse criar(ProfessorRequest request) {
-        if (request.cpf() == null || request.cpf().isBlank()) {
-            throw new IllegalArgumentException("CPF é obrigatório.");
-        }
-        if (repository.existsByCpf(request.cpf())) {
-            throw new IllegalArgumentException("CPF já cadastrado.");
-        }
-        if (repository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("E-mail já cadastrado.");
-        }
-
-        InstituicaoEnsino instituicao = instituicaoRepository.findById(request.instituicaoId())
-                .orElseThrow(() -> new IllegalArgumentException("Instituição de ensino não encontrada."));
-
-        Professor professor = new Professor();
-        professor.setNome(request.nome());
-        professor.setEmail(request.email());
-        professor.setLogin(request.login());
-        professor.setSenha(request.senha());
-        professor.setCpf(request.cpf());
-        professor.setDepartamento(request.departamento());
-        professor.setInstituicao(instituicao);
-
-        Professor salvo = repository.save(professor);
-        return toResponse(salvo);
-    }
-
     public List<ProfessorResponse> listar() {
         return repository.findAll().stream().map(this::toResponse).toList();
     }

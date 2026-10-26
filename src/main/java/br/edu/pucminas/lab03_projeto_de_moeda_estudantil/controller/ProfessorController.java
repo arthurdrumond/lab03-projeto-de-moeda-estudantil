@@ -6,7 +6,6 @@ import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.service.ProfessorServic
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -17,12 +16,6 @@ public class ProfessorController {
 
     public ProfessorController(ProfessorService service) {
         this.service = service;
-    }
-
-    @PostMapping
-    public ResponseEntity<ProfessorResponse> criar(@RequestBody ProfessorRequest request) {
-        ProfessorResponse response = service.criar(request);
-        return ResponseEntity.created(URI.create("/professores/" + response.id())).body(response);
     }
 
     @GetMapping
