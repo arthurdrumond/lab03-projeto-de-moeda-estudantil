@@ -27,6 +27,6 @@
    * **Cupom de Resgate para Empresa Parceira (US12):** Envio de e-mail de conferência à empresa parceira com os dados do aluno e o código do cupom para validação presencial.
    * **Arquitetura Stub/Log:** Implementação por log formatado no console do servidor e integrado em tempo real ao console visual do front-end.
 
-4. **Integração e Consolidação do Front-end (`index.html`):**
+4. **Integração e Consolidação do Front-end:**
    * Integração completa em Single Page Application (SPA) contendo formulários e listas para Alunos, Professores, Empresas Parceiras e Vantagens.
    * Mapeamento dos fluxos de execução de envio de moedas, resgate de cupons, consulta de extrato por perfil e painel visual de logs.
