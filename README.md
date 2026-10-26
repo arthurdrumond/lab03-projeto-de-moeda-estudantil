@@ -611,7 +611,6 @@ Materiais disponíveis em [`docs/`](docs/):
 - [Casos de uso](docs/diagramas/casos-de-uso.png)
 - [Diagrama de componentes](docs/diagramas/diagrama-de-componentes.png)
 - [Modelo entidade-relacionamento](docs/diagramas/modelo-er.jpeg)
-- [Contribuições da sprint 1](docs/contribuicao/sprint1.md)
 
 ## Contribuição
 
