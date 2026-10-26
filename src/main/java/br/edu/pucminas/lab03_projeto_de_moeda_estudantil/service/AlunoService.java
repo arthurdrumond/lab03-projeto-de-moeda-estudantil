@@ -77,14 +77,14 @@ public class AlunoService {
     }
 
     private void aplicar(Aluno aluno, AlunoRequest request) {
-        if (request.instituicaoId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Instituicao de ensino e obrigatoria");
+        if (request.instituicaoId() == null && request.empresaParceiraId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Selecione uma instituicao academica ou empresa parceira");
         }
-        InstituicaoEnsino instituicao = instituicaoService.buscarEntidade(request.instituicaoId());
-        if (request.empresaParceiraId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Empresa parceira e obrigatoria");
-        }
-        EmpresaParceira empresaParceira = empresaParceiraService.buscarEntidade(request.empresaParceiraId());
+        InstituicaoEnsino instituicao = request.instituicaoId() == null
+                ? null : instituicaoService.buscarEntidade(request.instituicaoId());
+        EmpresaParceira empresaParceira = request.empresaParceiraId() == null
+                ? null : empresaParceiraService.buscarEntidade(request.empresaParceiraId());
         aluno.setNome(request.nome());
         aluno.setEmail(request.email());
         aluno.setLogin(request.login());

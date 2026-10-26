@@ -75,8 +75,13 @@ O aluno realiza o próprio cadastro informando:
 - CPF e RG;
 - curso;
 - endereço;
-- instituição de ensino;
-- empresa parceira associada.
+- uma instituição de ensino ou uma empresa parceira no campo de associação.
+
+O campo de associação do cadastro reúne as duas opções em grupos separados:
+“Instituições acadêmicas” e “Empresas parceiras”. O aluno escolhe uma única
+entidade. Alunos associados a uma empresa podem receber moedas dela; alunos
+associados somente a uma instituição não podem receber transferências de
+empresas parceiras.
 
 Depois de autenticado, o aluno pode consultar seu saldo, visualizar vantagens
 ativas, resgatar uma vantagem e consultar as transferências recebidas e os
@@ -378,7 +383,8 @@ curl -X POST http://localhost:8080/auth/login \
 | `PUT` | `/alunos/{id}` | Atualiza aluno |
 | `DELETE` | `/alunos/{id}` | Remove aluno |
 
-O cadastro exige `instituicaoId`, `empresaParceiraId` e os dados de endereço.
+O cadastro exige exatamente um dos identificadores `instituicaoId` ou
+`empresaParceiraId`, além dos dados de endereço.
 
 ### Professores
 

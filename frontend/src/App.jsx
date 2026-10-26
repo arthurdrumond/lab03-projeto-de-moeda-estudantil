@@ -30,7 +30,7 @@ function Auth({ onLogin }) {
   const [role, setRole] = useState('ALUNO')
   const [institutions, setInstitutions] = useState([])
   const [companies, setCompanies] = useState([])
-  const [form, setForm] = useState({ nome: '', email: '', login: '', senha: '', cpf: '', rg: '', curso: '', departamento: '', cnpj: '', instituicaoId: '', empresaParceiraId: '', ...emptyAddress })
+  const [form, setForm] = useState({ nome: '', email: '', login: '', senha: '', cpf: '', rg: '', curso: '', departamento: '', cnpj: '', associacaoId: '', ...emptyAddress })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const update = (key) => (event) => setForm({ ...form, [key]: event.target.value })
@@ -47,7 +47,22 @@ function Auth({ onLogin }) {
       else {
         const address = { logradouro: form.logradouro, numero: form.numero, complemento: form.complemento, bairro: form.bairro, cidade: form.cidade, estado: form.estado, cep: form.cep }
         const body = role === 'ALUNO'
-          ? { nome: form.nome, email: form.email, login: form.login, senha: form.senha, cpf: form.cpf, rg: form.rg, curso: form.curso, instituicaoId: Number(form.instituicaoId), empresaParceiraId: Number(form.empresaParceiraId), endereco: address }
+          ? {
+            nome: form.nome,
+            email: form.email,
+            login: form.login,
+            senha: form.senha,
+            cpf: form.cpf,
+            rg: form.rg,
+            curso: form.curso,
+            instituicaoId: form.associacaoId.startsWith('instituicao:')
+              ? Number(form.associacaoId.split(':')[1])
+              : null,
+            empresaParceiraId: form.associacaoId.startsWith('empresa:')
+              ? Number(form.associacaoId.split(':')[1])
+              : null,
+            endereco: address,
+          }
           : { nome: form.nome, email: form.email, login: form.login, senha: form.senha, cnpj: form.cnpj, endereco: address }
         if (role === 'ALUNO') await api.createStudent(body)
         if (role === 'EMPRESA') await api.createCompany(body)
@@ -72,8 +87,7 @@ function Auth({ onLogin }) {
           {mode === 'register' && <><Field label="Nome" value={form.nome} onChange={update('nome')} required /><Field label="E-mail" type="email" value={form.email} onChange={update('email')} required /></>}
           <div className="grid gap-4 sm:grid-cols-2"><Field label="Login" value={form.login} onChange={update('login')} required /><Field label="Senha" type="password" value={form.senha} onChange={update('senha')} required /></div>
           {mode === 'register' && role === 'ALUNO' && <div className="grid gap-4 sm:grid-cols-2"><Field label="CPF" value={form.cpf} onChange={update('cpf')} required /><Field label="RG" value={form.rg} onChange={update('rg')} required /></div>}
-          {mode === 'register' && role === 'ALUNO' && <div className="grid gap-4 sm:grid-cols-2"><Field label="Curso" value={form.curso} onChange={update('curso')} required /><Select label="Instituição" value={form.instituicaoId} onChange={update('instituicaoId')} required><option value="">Selecione</option>{institutions.map((item) => <option key={item.id} value={item.id}>{item.nome}</option>)}</Select></div>}
-          {mode === 'register' && role === 'ALUNO' && <Select label="Empresa parceira associada" value={form.empresaParceiraId} onChange={update('empresaParceiraId')} required><option value="">Selecione</option>{companies.map((item) => <option key={item.id} value={item.id}>{item.nome}</option>)}</Select>}
+          {mode === 'register' && role === 'ALUNO' && <div className="grid gap-4 sm:grid-cols-2"><Field label="Curso" value={form.curso} onChange={update('curso')} required /><Select label="Instituição" value={form.associacaoId} onChange={update('associacaoId')} required><option value="">Selecione</option><optgroup label="Instituições acadêmicas">{institutions.map((item) => <option key={`instituicao-${item.id}`} value={`instituicao:${item.id}`}>{item.nome}</option>)}</optgroup><optgroup label="Empresas parceiras">{companies.map((item) => <option key={`empresa-${item.id}`} value={`empresa:${item.id}`}>{item.nome}</option>)}</optgroup></Select></div>}
           {mode === 'register' && role === 'ALUNO' && <div className="space-y-4 rounded-2xl bg-slate-50 p-4"><p className="text-sm font-bold text-ink">Endereço</p><div className="grid gap-4 sm:grid-cols-[1fr_120px]"><Field label="Logradouro" value={form.logradouro} onChange={update('logradouro')} required /><Field label="Número" value={form.numero} onChange={update('numero')} required /></div><Field label="Complemento" value={form.complemento} onChange={update('complemento')} /><div className="grid gap-4 sm:grid-cols-2"><Field label="Bairro" value={form.bairro} onChange={update('bairro')} required /><Field label="Cidade" value={form.cidade} onChange={update('cidade')} required /></div><div className="grid gap-4 sm:grid-cols-2"><Field label="Estado" value={form.estado} onChange={update('estado')} required /><Field label="CEP" value={form.cep} onChange={update('cep')} required /></div></div>}
           {mode === 'register' && role === 'EMPRESA' && <Field label="CNPJ" value={form.cnpj} onChange={update('cnpj')} required />}
           {error && <p className="rounded-xl bg-red-50 px-3 py-2 text-sm font-semibold text-red-600">{error}</p>}

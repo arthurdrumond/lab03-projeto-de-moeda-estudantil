@@ -101,6 +101,9 @@ public class EmpresaParceiraService {
     }
 
     EmpresaParceiraResponse toResponse(EmpresaParceira empresa) {
+        if (empresa == null) {
+            return null;
+        }
         return new EmpresaParceiraResponse(
                 empresa.getId(),
                 empresa.getNome(),
