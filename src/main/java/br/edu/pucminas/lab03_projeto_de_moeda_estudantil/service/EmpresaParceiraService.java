@@ -56,7 +56,8 @@ public class EmpresaParceiraService {
         repository.delete(buscarEntidade(id));
     }
 
-    private EmpresaParceira buscarEntidade(Long id) {
+    @Transactional(readOnly = true)
+    public EmpresaParceira buscarEntidade(Long id) {
         return repository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empresa parceira nao encontrada"));
     }
@@ -99,7 +100,7 @@ public class EmpresaParceiraService {
                 endereco.getCep());
     }
 
-    private EmpresaParceiraResponse toResponse(EmpresaParceira empresa) {
+    EmpresaParceiraResponse toResponse(EmpresaParceira empresa) {
         return new EmpresaParceiraResponse(
                 empresa.getId(),
                 empresa.getNome(),

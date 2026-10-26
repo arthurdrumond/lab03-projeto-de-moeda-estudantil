@@ -36,6 +36,27 @@ public class InstituicaoEnsinoService {
     }
 
     @Transactional(readOnly = true)
+    public InstituicaoEnsinoResponse buscarPorId(Long id) {
+        return toResponse(buscarEntidade(id));
+    }
+
+    @Transactional
+    public InstituicaoEnsinoResponse atualizar(Long id, InstituicaoEnsinoRequest request) {
+        InstituicaoEnsino instituicao = buscarEntidade(id);
+        if (!request.cnpj().equals(instituicao.getCnpj()) && repository.existsByCnpj(request.cnpj())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "CNPJ ja cadastrado");
+        }
+        instituicao.setNome(request.nome());
+        instituicao.setCnpj(request.cnpj());
+        return toResponse(repository.save(instituicao));
+    }
+
+    @Transactional
+    public void excluir(Long id) {
+        repository.delete(buscarEntidade(id));
+    }
+
+    @Transactional(readOnly = true)
     public InstituicaoEnsino buscarEntidade(Long id) {
         return repository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Instituicao de ensino nao encontrada"));
