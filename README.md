@@ -183,14 +183,28 @@ Empresas consultam:
 
 ### Backend
 
-O backend utiliza uma arquitetura em camadas:
+O backend é organizado por feature: cada pacote reúne tudo o que pertence a um
+domínio de negócio, em vez de separar as classes por tipo técnico.
+
+| Pacote | Responsabilidade |
+| --- | --- |
+| `aluno` | Cadastro e manutenção de alunos |
+| `auth` | Login |
+| `empresaparceira` | Cadastro e manutenção de empresas parceiras |
+| `instituicaoensino` | Cadastro e manutenção de instituições de ensino |
+| `professor` | Consulta e manutenção de professores |
+| `vantagem` | Cadastro e consulta de vantagens |
+| `moeda` | Transferências, créditos semestrais, resgates, extratos e notificações por e-mail |
+| `shared` | `Usuario`, `Endereco`, `EnderecoDTO` e tratamento global de exceções |
+| `config` | Seed executado na inicialização |
+
+Dentro de cada feature, as classes mantêm os mesmos papéis:
 
 1. **Controllers** recebem requisições HTTP e expõem endpoints REST.
-2. **DTOs** definem os formatos de entrada e saída da API.
+2. **Requests e responses** definem os formatos de entrada e saída da API.
 3. **Services** concentram validações e regras de negócio.
 4. **Repositories** fazem o acesso aos dados via Spring Data JPA.
-5. **Models** representam as entidades persistidas.
-6. **Config** contém o seed executado na inicialização.
+5. **Entidades** representam os dados persistidos.
 
 As transações não possuem CRUD público. Elas são criadas pelas operações de
 negócio de transferência, crédito semestral e resgate.
@@ -538,12 +552,15 @@ Configuração padrão do console:
 │   └── vite.config.js
 ├── src/
 │   ├── main/java/.../
+│   │   ├── aluno/                # Feature de alunos
+│   │   ├── auth/                 # Feature de login
 │   │   ├── config/               # Seed inicial
-│   │   ├── controller/           # Endpoints REST
-│   │   ├── dto/                  # Requests e responses
-│   │   ├── model/                # Entidades JPA
-│   │   ├── repository/           # Interfaces Spring Data
-│   │   └── service/              # Regras de negócio
+│   │   ├── empresaparceira/      # Feature de empresas parceiras
+│   │   ├── instituicaoensino/    # Feature de instituições de ensino
+│   │   ├── moeda/                # Transações, extratos e e-mails
+│   │   ├── professor/            # Feature de professores
+│   │   ├── shared/               # Classes comuns às features
+│   │   └── vantagem/             # Feature de vantagens
 │   ├── main/resources/
 │   │   ├── application.properties
 │   │   └── static/index.html

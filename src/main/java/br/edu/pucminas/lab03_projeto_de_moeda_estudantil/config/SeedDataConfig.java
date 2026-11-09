@@ -1,13 +1,13 @@
 package br.edu.pucminas.lab03_projeto_de_moeda_estudantil.config;
 
-import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.model.InstituicaoEnsino;
-import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.model.EmpresaParceira;
-import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.model.Professor;
-import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.model.Vantagem;
-import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.repository.EmpresaParceiraRepository;
-import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.repository.InstituicaoEnsinoRepository;
-import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.repository.ProfessorRepository;
-import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.repository.VantagemRepository;
+import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.empresaparceira.EmpresaParceira;
+import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.empresaparceira.EmpresaParceiraRepository;
+import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.instituicaoensino.InstituicaoEnsino;
+import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.instituicaoensino.InstituicaoEnsinoRepository;
+import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.professor.Professor;
+import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.professor.ProfessorRepository;
+import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.vantagem.Vantagem;
+import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.vantagem.VantagemRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
