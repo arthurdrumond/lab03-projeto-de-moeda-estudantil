@@ -61,7 +61,7 @@ public class MoedaService {
         }
 
         Aluno aluno = alunoRepository.findById(req.alunoId())
-                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado."));
+                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado com o ID: " + req.alunoId()));
 
         if ((req.professorId() == null) == (req.empresaParceiraId() == null)) {
             throw new IllegalArgumentException("Informe exatamente um remetente: professor ou empresa parceira.");
@@ -69,35 +69,42 @@ public class MoedaService {
 
         Professor professor = null;
         EmpresaParceira empresa = null;
+
         if (req.professorId() != null) {
             professor = professorRepository.findById(req.professorId())
-                    .orElseThrow(() -> new IllegalArgumentException("Professor não encontrado."));
+                    .orElseThrow(() -> new IllegalArgumentException("Professor não encontrado com o ID: " + req.professorId()));
+
             if (professor.getInstituicao() == null
                     || aluno.getInstituicao() == null
                     || !professor.getInstituicao().getId().equals(aluno.getInstituicao().getId())) {
                 throw new IllegalArgumentException(
-                        "O professor só pode enviar moedas a alunos da sua própria instituição.");
+                        "O professor só pode enviar moedas a alunos da sua própria instituição de ensino.");
             }
+
             if (professor.getSaldo() < req.valor()) {
-                throw new IllegalArgumentException("Saldo insuficiente do professor (" + professor.getSaldo() + " moedas).");
+                throw new IllegalArgumentException(String.format(
+                        "Saldo insuficiente para transferência. Saldo atual do professor: %d moedas. Valor solicitado: %d moedas.",
+                        professor.getSaldo(), req.valor()
+                ));
             }
+
             professor.setSaldo(professor.getSaldo() - req.valor());
-        } else if (req.empresaParceiraId() != null) {
+        } else {
             empresa = empresaParceiraRepository.findById(req.empresaParceiraId())
-                    .orElseThrow(() -> new IllegalArgumentException("Empresa parceira não encontrada."));
+                    .orElseThrow(() -> new IllegalArgumentException("Empresa parceira não encontrada com o ID: " + req.empresaParceiraId()));
+
             if (aluno.getEmpresaParceira() == null
                     || !empresa.getId().equals(aluno.getEmpresaParceira().getId())) {
                 throw new IllegalArgumentException("A empresa parceira só pode enviar moedas a alunos associados a ela.");
             }
-        } else {
-            throw new IllegalArgumentException("Informe o professor ou a empresa parceira remetente.");
         }
+
         aluno.setSaldo(aluno.getSaldo() + req.valor());
 
         TransferenciaMoedas transf = new TransferenciaMoedas();
         transf.setDataHora(LocalDateTime.now());
         transf.setValor(req.valor());
-        transf.setMotivo(req.motivo());
+        transf.setMotivo(req.motivo().trim());
         transf.setRemetente(professor);
         transf.setEmpresaParceira(empresa);
         transf.setDestinatario(aluno);
@@ -115,12 +122,15 @@ public class MoedaService {
     @Transactional
     public ResgateVantagem resgatar(ResgateRequest req) {
         Aluno aluno = alunoRepository.findById(req.alunoId())
-                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado."));
+                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado com o ID: " + req.alunoId()));
         Vantagem vantagem = vantagemRepository.findById(req.vantagemId())
-                .orElseThrow(() -> new IllegalArgumentException("Vantagem não encontrada."));
+                .orElseThrow(() -> new IllegalArgumentException("Vantagem não encontrada com o ID: " + req.vantagemId()));
 
         if (aluno.getSaldo() < vantagem.getCustoMoedas()) {
-            throw new IllegalArgumentException("Saldo insuficiente para resgatar esta vantagem.");
+            throw new IllegalArgumentException(String.format(
+                    "Saldo insuficiente para resgatar esta vantagem. Saldo do aluno: %d moedas. Custo da vantagem: %d moedas.",
+                    aluno.getSaldo(), vantagem.getCustoMoedas()
+            ));
         }
 
         aluno.setSaldo(aluno.getSaldo() - vantagem.getCustoMoedas());
@@ -142,9 +152,10 @@ public class MoedaService {
         return salvo;
     }
 
+    @Transactional(readOnly = true)
     public ExtratoResponse obterExtratoAluno(Long alunoId) {
         Aluno aluno = alunoRepository.findById(alunoId)
-                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado."));
+                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado com o ID: " + alunoId));
 
         List<TransacaoResponse> lista = transacaoRepository.findByAlunoId(alunoId).stream().map(t -> {
             String desc = "";
@@ -164,9 +175,10 @@ public class MoedaService {
         return new ExtratoResponse(aluno.getSaldo(), lista);
     }
 
+    @Transactional(readOnly = true)
     public ExtratoResponse obterExtratoProfessor(Long professorId) {
         Professor professor = professorRepository.findById(professorId)
-                .orElseThrow(() -> new IllegalArgumentException("Professor não encontrado."));
+                .orElseThrow(() -> new IllegalArgumentException("Professor não encontrado com o ID: " + professorId));
 
         List<TransacaoResponse> lista = transacaoRepository.findByProfessorId(professorId).stream().map(t -> {
             String desc = "";
@@ -185,9 +197,10 @@ public class MoedaService {
         return new ExtratoResponse(professor.getSaldo(), lista);
     }
 
+    @Transactional(readOnly = true)
     public ExtratoResponse obterExtratoEmpresaParceira(Long empresaId) {
         EmpresaParceira empresa = empresaParceiraRepository.findById(empresaId)
-                .orElseThrow(() -> new IllegalArgumentException("Empresa parceira não encontrada."));
+                .orElseThrow(() -> new IllegalArgumentException("Empresa parceira não encontrada com o ID: " + empresaId));
         List<TransacaoResponse> lista = transacaoRepository.findByEmpresaParceiraId(empresaId).stream()
                 .map(t -> {
                     TransferenciaMoedas transferencia = (TransferenciaMoedas) t;

@@ -1,6 +1,8 @@
 package br.edu.pucminas.lab03_projeto_de_moeda_estudantil.controller;
 
 import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.dto.*;
+import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.model.ResgateVantagem;
+import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.model.TransferenciaMoedas;
 import br.edu.pucminas.lab03_projeto_de_moeda_estudantil.service.MoedaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,21 +24,15 @@ public class MoedaController {
     }
 
     @PostMapping("/moedas/transferir")
-    public ResponseEntity<?> transferir(@RequestBody TransferenciaRequest request) {
-        try {
-            return ResponseEntity.ok(moedaService.transferir(request));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<TransferenciaMoedas> transferir(@RequestBody TransferenciaRequest request) {
+        TransferenciaMoedas transferencia = moedaService.transferir(request);
+        return ResponseEntity.ok(transferencia);
     }
 
     @PostMapping("/moedas/resgatar")
-    public ResponseEntity<?> resgatar(@RequestBody ResgateRequest request) {
-        try {
-            return ResponseEntity.ok(moedaService.resgatar(request));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<ResgateVantagem> resgatar(@RequestBody ResgateRequest request) {
+        ResgateVantagem resgate = moedaService.resgatar(request);
+        return ResponseEntity.ok(resgate);
     }
 
     @GetMapping("/alunos/{id}/extrato")
