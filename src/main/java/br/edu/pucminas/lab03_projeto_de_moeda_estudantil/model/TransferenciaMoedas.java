@@ -14,11 +14,11 @@ public class TransferenciaMoedas extends Transacao {
     private String motivo;
 
     @ManyToOne
-    @JoinColumn(name = "professor_id")
+    @JoinColumn(name = "remetente_id", nullable = true)
     private Professor remetente;
 
     @ManyToOne
-    @JoinColumn(name = "empresa_parceira_id")
+    @JoinColumn(name = "empresa_parceira_id", nullable = true)
     private EmpresaParceira empresaParceira;
 
     @ManyToOne

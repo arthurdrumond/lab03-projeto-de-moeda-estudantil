@@ -116,6 +116,7 @@ public class MoedaService {
         TransferenciaMoedas salva = transacaoRepository.save(transf);
 
         emailService.notificarRecebimento(salva);
+        emailService.notificarEnvioProfessor(salva);
         return salva;
     }
 
